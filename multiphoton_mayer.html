@@ -1,0 +1,1063 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Multiphoton Photoelectric Effect – Goeppert Mayer</title>
+
+<style>
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: Arial, sans-serif;
+            background: #eef2f7;
+            color: #222;
+        }
+
+        h1 {
+            text-align: center;
+            margin: 20px 0;
+        }
+
+        .container {
+            width: 95%;
+            max-width: 1200px;
+            margin: auto;
+            padding-bottom: 30px;
+        }
+
+        .controls {
+            background: white;
+            padding: 20px;
+            border-radius: 12px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px;
+            box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+        }
+
+        .control {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+
+        label {
+            font-weight: bold;
+        }
+
+        select,
+        input[type="range"] {
+            width: 100%;
+        }
+
+        .value {
+            font-weight: bold;
+        }
+
+        .hint {
+            font-size: 12px;
+            color: #667;
+        }
+
+        /* ---------- View toggle ---------- */
+
+        .toolbar {
+            display: flex;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .view-button {
+            background: #1f4e8c;
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 11px 20px;
+            font-size: 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .view-button:hover {
+            background: #173b6b;
+        }
+
+        .view-button:focus-visible {
+            outline: 3px solid #7fb2ff;
+            outline-offset: 2px;
+        }
+
+        .view-caption {
+            font-size: 14px;
+            color: #556;
+        }
+
+        /* ---------- Simulation canvas ---------- */
+
+        .sim-wrap {
+            max-width: 800px;
+            margin: 12px auto 0;
+            overflow-x: auto;
+            border-radius: 12px;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            min-width: 720px;
+            background: #07111f;
+            border-radius: 12px;
+        }
+
+        .results {
+            margin-top: 20px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+
+        .result-box {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+        }
+
+        .result-box h3 {
+            margin: 5px 0 10px;
+        }
+
+        .result-box p {
+            font-size: 18px;
+            font-weight: bold;
+            margin: 0;
+        }
+
+        .status {
+            margin-top: 15px;
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            text-align: center;
+            font-size: 18px;
+            font-weight: bold;
+        }
+
+        @media (max-width: 900px) {
+            .controls {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 560px) {
+            .controls {
+                grid-template-columns: 1fr;
+            }
+
+            .results {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Instrument+Serif:ital@0;1&family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+:root{--ink:#03050a;--panel:rgba(14,18,28,.82);--line:rgba(255,255,255,.14);--text:#f4f7fb;--muted:#9aa6b8;--e:#6ee7ff}
+html,body{background:var(--ink)!important;color:var(--text);font-family:'IBM Plex Sans',Arial,sans-serif}
+#paths{position:fixed;inset:0;width:100%;height:100%;z-index:0;pointer-events:none;opacity:.6}
+#paths path{fill:none;stroke:rgba(110,231,255,.55);stroke-width:1;vector-effect:non-scaling-stroke;stroke-dasharray:.25 .75;animation:flow 10s linear infinite}
+@keyframes flow{to{stroke-dashoffset:-1}}
+.container{position:relative;z-index:1;padding-top:28px}
+h1.vapour{font:400 clamp(2.6rem,6vw,4.4rem)/1 'Instrument Serif',Georgia,serif;letter-spacing:-.02em;color:#f3f8ff;text-align:center;margin:0 0 6px;position:relative;isolation:isolate;text-shadow:0 0 22px rgba(110,231,255,.5)}
+h1.vapour::before{content:attr(data-t);position:absolute;inset:0;z-index:-1;color:rgba(110,231,255,.6);filter:blur(16px);transform:translateY(-.1em)}
+.back{display:block;width:max-content;margin:12px auto 26px;color:var(--muted);text-decoration:none;font-size:14px}
+.back:hover{color:#fff}
+.controls,.result-box,.status,.card{background:var(--panel)!important;border:1px solid var(--line);box-shadow:0 12px 40px rgba(0,0,0,.5)!important;backdrop-filter:blur(14px)}
+.controls{border-radius:18px;color:var(--text)}
+label{color:var(--text)}
+.hint{color:var(--muted)}
+select{background:#080c14;color:var(--text);border:1px solid var(--line);border-radius:10px;padding:9px 10px;font:inherit}
+input[type="range"]{accent-color:var(--e)}
+.view-button{background:var(--e);color:#03050a;border-radius:999px;font-weight:600}
+.view-button:hover{background:#b9f3ff}
+.view-caption{color:var(--muted)}
+.sim-wrap{border:1px solid var(--line);background:#03050a}
+.sim-wrap canvas{background:transparent;border-radius:16px}
+.results{margin-top:18px}
+.result-box{border-radius:14px}
+.result-box h3{color:var(--muted);font:500 12px 'IBM Plex Sans',sans-serif;margin:4px 0 8px}
+.result-box p{font:500 18px 'IBM Plex Mono',monospace;color:#fff}
+.graphs{display:grid;grid-template-columns:1fr 1fr;gap:15px;margin-top:18px}
+.card{margin:0;border-radius:14px;padding:14px 16px}
+.card figcaption{color:var(--muted);font:500 13px 'IBM Plex Sans',sans-serif;margin-bottom:8px}
+.graphs canvas{min-width:0;width:100%;height:240px;background:transparent;border-radius:0}
+.status{color:var(--text);margin-top:18px}
+@media (max-width:900px){.graphs{grid-template-columns:1fr}}
+</style>
+
+<style>
+.navrow{display:flex;justify-content:center;flex-wrap:wrap;gap:28px;margin:12px 0 10px}
+.navrow .back{margin:0}
+.navrow .back.next{color:var(--e)}
+.sub{max-width:760px;margin:0 auto 18px;text-align:center;color:var(--muted);font-size:15px}
+.presets-label{color:var(--muted);font-size:14px}
+.view-button.alt{background:transparent;color:var(--text);border:1px solid var(--line)}
+.view-button.alt:hover{background:rgba(255,255,255,.08)}
+.view-button.alt.on{border-color:var(--e);color:var(--e)}
+.status{font-size:16px;font-weight:500;line-height:1.55}
+.theory{margin-top:18px;padding:20px 22px}
+.theory h2{margin:0 0 14px;font:400 1.9rem/1.1 'Instrument Serif',Georgia,serif;color:#f3f8ff}
+.theory-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:22px}
+.theory h3{margin:0 0 6px;font:600 14px 'IBM Plex Sans',sans-serif;color:var(--e)}
+.theory p{margin:0;color:#cfd8e6;font-size:14px;line-height:1.6}
+.theory .note{margin-top:16px;padding-top:14px;border-top:1px solid var(--line);color:var(--muted);font-size:13px}
+@media (max-width:900px){.theory-grid{grid-template-columns:1fr}}
+</style>
+</head>
+
+<body>
+<svg id="paths" viewBox="0 0 1000 1000" preserveAspectRatio="none" aria-hidden="true"></svg>
+
+<div class="container">
+
+    <h1 class="vapour" data-t="Multiphoton Photoemission">Multiphoton Photoemission</h1>
+    <p class="sub">Maria Goeppert Mayer's generalisation of the photoelectric effect: when one photon is not enough, several can act together on the same electron.</p>
+    <nav class="navrow">
+        <a class="back" href="index.html">← Back to launch</a>
+        <a class="back next" href="photoelectric_effect.html">← Classic photoelectric effect</a>
+    </nav>
+
+    <!-- CONTROLS -->
+    <div class="controls">
+
+        <div class="control">
+            <label for="metal">Metal</label>
+            <select id="metal">
+                <option value="2.14">Cesium</option>
+                <option value="2.28">Sodium</option>
+                <option value="2.30">Potassium</option>
+                <option value="2.87">Calcium</option>
+                <option value="4.30">Zinc</option>
+            </select>
+        </div>
+
+        <div class="control">
+            <label for="frequency">
+                Photon frequency:
+                <span id="frequencyValue">3.7</span>
+                × 10¹⁴ Hz
+                (λ ≈ <span id="wavelengthValue">810</span> nm)
+            </label>
+            <input type="range" id="frequency" min="1" max="12" step="0.1" value="3.7">
+            <span class="hint">Most of this range is below the threshold frequency</span>
+        </div>
+
+        <div class="control">
+            <label for="intensity">
+                Peak intensity:
+                <span id="intensityValue">1.0 × 10¹¹</span> W/cm²
+            </label>
+            <input type="range" id="intensity" min="6" max="12" step="0.05" value="11">
+            <span class="hint">Logarithmic scale (10⁶ to 10¹²)</span>
+        </div>
+
+        <div class="control">
+            <label for="speed">
+                Animation speed:
+                <span id="speedValue">1.00×</span>
+            </label>
+            <input type="range" id="speed" min="0.25" max="2" step="0.05" value="1">
+            <span class="hint">The real events last about a femtosecond</span>
+        </div>
+
+    </div>
+
+
+    <!-- PRESETS -->
+    <div class="toolbar">
+        <span class="presets-label">Try:</span>
+        <button type="button" class="view-button alt" data-metal="2.14" data-f="7" data-i="9">Einstein: one photon</button>
+        <button type="button" class="view-button alt" data-metal="2.14" data-f="3.7" data-i="11">Goeppert Mayer: two photons</button>
+        <button type="button" class="view-button alt" data-metal="2.14" data-f="2" data-i="11.5">Three photons</button>
+    </div>
+
+
+    <!-- SIMULATION -->
+    <div class="sim-wrap">
+        <canvas id="simulation" aria-label="Energy-level picture of multiphoton photoemission"></canvas>
+    </div>
+
+
+    <!-- RESULTS -->
+    <div class="results">
+
+        <div class="result-box">
+            <h3>Photons Needed (n)</h3>
+            <p id="photonsNeeded">2</p>
+        </div>
+
+        <div class="result-box">
+            <h3>Photon Energy → n · hf</h3>
+            <p id="photonEnergy">1.53 → 3.06 eV</p>
+        </div>
+
+        <div class="result-box">
+            <h3>Maximum KE</h3>
+            <p id="kineticEnergy">0.92 eV</p>
+        </div>
+
+        <div class="result-box">
+            <h3>Relative Yield (∝ Iⁿ)</h3>
+            <p id="yieldValue">1.0 × 10⁻²</p>
+        </div>
+
+    </div>
+
+
+    <section class="graphs">
+        <figure class="card"><figcaption>Maximum kinetic energy vs frequency (colour = photons absorbed, n)</figcaption><canvas id="graphK"></canvas></figure>
+        <figure class="card"><figcaption>Emission yield vs intensity (slope on this plot = n)</figcaption><canvas id="graphI"></canvas></figure>
+    </section>
+
+    <div class="status" id="status" aria-live="polite">&nbsp;</div>
+
+
+    <!-- THEORY -->
+    <section class="theory card">
+        <h2>The theory behind this page</h2>
+        <div class="theory-grid">
+            <div>
+                <h3>Einstein, 1905</h3>
+                <p>One photon hands all of its energy hf to one electron. Emission needs hf ≥ φ, the work function. At ordinary light intensities, a frequency below the threshold frees nothing, however bright the lamp.</p>
+            </div>
+            <div>
+                <h3>Goeppert Mayer, 1931</h3>
+                <p>In her doctoral thesis in Göttingen she showed that quantum theory also allows an atom or electron to take up two photons in a single elementary act, passing through a virtual intermediate state that lasts only about a femtosecond. The rate grows as I², so it only becomes noticeable at very high intensity, which lasers later made possible.</p>
+            </div>
+            <div>
+                <h3>The general rule</h3>
+                <p>For n photons absorbed together: n · hf ≥ φ, KE<sub>max</sub> = n · hf − φ, and the rate scales as Iⁿ. Setting n = 1 gives back Einstein's law, so the classic effect is the first term of a larger series. Two-photon cross-sections are measured in GM units (10⁻⁵⁰ cm⁴ s per photon), named in her honour.</p>
+            </div>
+        </div>
+        <p class="note">Modelling note: the yield here is taken as (I / 10¹² W/cm²)ⁿ, an illustrative scaling that keeps the Iⁿ dependence. Real coefficients depend on the material and the light pulse. The animation compresses the probability on a log scale so that rare events can still be watched.</p>
+    </section>
+
+</div>
+
+
+<script>
+(function () {
+    "use strict";
+
+    // ============================================================
+    // CONSTANTS AND LAYOUT
+    // ============================================================
+
+    var PLANCK = 4.135667696e-15;     // eV·s
+    var LIGHT_SPEED_NM = 2998;        // λ(nm) = 2998 / f(10¹⁴ Hz)
+    var IC_LOG = 12;                  // yield = 1 at 10¹² W/cm²
+    var FLOOR = -6;                   // log10(yield) below which nothing is visible
+
+    var VW = 1000, VH = 520;
+    var YF = 450;                     // Fermi level (canvas y)
+    var S = 44;                       // pixels per eV
+    var EX = 300;                     // x of the electron / energy ladder
+    var SLAB_L = 60, SLAB_R = 380;
+    var COLL_X = 905;                 // collector plate
+
+    var TAU_V = 1.0;                  // virtual state lifetime (animation seconds)
+    var GAP = 0.5;                    // delay between successive photons
+    var PLEN = 110;                   // photon wave-packet length
+    var PHOTON_SPEED = 330;
+
+    function $(id) { return document.getElementById(id); }
+
+    var canvas = $("simulation"), ctx = canvas.getContext("2d");
+    var metal = $("metal"), freq = $("frequency"), inten = $("intensity"), speed = $("speed");
+
+    function clamp(v, lo, hi) { return Math.min(hi, Math.max(lo, v)); }
+
+    function sup(s) {
+        var m = "⁻⁰¹²³⁴⁵⁶⁷⁸⁹";
+        return String(s).replace(/[-0-9]/g, function (c) {
+            return m.charAt("-0123456789".indexOf(c));
+        });
+    }
+
+    function sciLog(l) {
+        var e = Math.floor(l + 1e-9), m = Math.pow(10, l - e), s = m.toFixed(1);
+        if (s === "10.0") { s = "1.0"; e++; }
+        return s + " × 10" + sup(e);
+    }
+
+    function rgb(c, a) {
+        return a === undefined
+            ? "rgb(" + c[0] + "," + c[1] + "," + c[2] + ")"
+            : "rgba(" + c[0] + "," + c[1] + "," + c[2] + "," + a + ")";
+    }
+
+    // ============================================================
+    // CANVAS SIZE (same virtual-space approach as the classic page)
+    // ============================================================
+
+    var scale = 1, dpr = 1;
+
+    function resizeCanvas() {
+        dpr = window.devicePixelRatio || 1;
+        var w = canvas.clientWidth;
+        scale = w / VW;
+        var h = VH * scale;
+        canvas.style.height = h + "px";
+        canvas.width = Math.round(w * dpr);
+        canvas.height = Math.round(h * dpr);
+    }
+
+    // ============================================================
+    // COLOUR OF LIGHT (same mapping as the classic page)
+    // ============================================================
+
+    function getLightColor(f) {
+        var w = LIGHT_SPEED_NM / f, r = 0, g = 0, b = 0;
+
+        if (w < 380) { return [176, 128, 255]; }
+        if (w > 780) { return [200, 70, 70]; }
+
+        if (w < 440) { r = (440 - w) / 60; b = 1; }
+        else if (w < 490) { g = (w - 440) / 50; b = 1; }
+        else if (w < 510) { g = 1; b = (510 - w) / 20; }
+        else if (w < 580) { r = (w - 510) / 70; g = 1; }
+        else if (w < 645) { r = 1; g = (645 - w) / 65; }
+        else { r = 1; }
+
+        var k = 1;
+        if (w < 420) { k = 0.4 + 0.6 * (w - 380) / 40; }
+        else if (w > 700) { k = 0.4 + 0.6 * (780 - w) / 80; }
+
+        return [r, g, b].map(function (c) {
+            return Math.round(255 * Math.pow(c * k, 0.8));
+        });
+    }
+
+    // ============================================================
+    // PHYSICS
+    // ============================================================
+
+    function nFor(phi, f) {
+        return Math.max(1, Math.ceil(phi / (PLANCK * f * 1e14) - 1e-9));
+    }
+
+    function getPhysics() {
+        var phi = Number(metal.value);
+        var f = Number(freq.value);
+        var hf = PLANCK * f * 1e14;
+        var n = nFor(phi, f);
+        var KE = Math.max(0, n * hf - phi);
+        var logI = Number(inten.value);
+        var logY = n * (logI - IC_LOG);
+        var vis = clamp((logY - FLOOR) / (-FLOOR), 0, 1);
+
+        return {
+            phi: phi, f: f, hf: hf, n: n, KE: KE,
+            logI: logI, logY: logY,
+            p: Math.pow(vis, 1.5),          // animation probability per attempt
+            f0: phi / PLANCK / 1e14
+        };
+    }
+
+    var P = getPhysics();
+    var lightRGB = getLightColor(P.f);
+
+    // ============================================================
+    // READOUTS
+    // ============================================================
+
+    function statusText() {
+        var name = metal.options[metal.selectedIndex].text;
+        var hf = P.hf.toFixed(2), phi = P.phi.toFixed(2), s;
+
+        if (P.n === 1) {
+            s = "One " + hf + " eV photon already exceeds the work function of " + name +
+                " (" + phi + " eV): this is the ordinary photoelectric effect, with yield ∝ I.";
+        } else {
+            s = "A " + hf + " eV photon is below the work function of " + name + " (" + phi +
+                " eV), so Einstein's picture predicts no emission. But " + P.n +
+                " photons absorbed together carry " + (P.n * P.hf).toFixed(2) +
+                " eV, leaving " + P.KE.toFixed(2) + " eV of kinetic energy. Yield ∝ I" + sup(P.n) + ".";
+        }
+
+        if (P.logY < FLOOR) {
+            s += " At this intensity the yield is too small to see; try about " +
+                 sciLog(IC_LOG + FLOOR / P.n) + " W/cm² or more.";
+        }
+        return s;
+    }
+
+    function updateReadouts() {
+        $("frequencyValue").textContent = Number(freq.value).toFixed(1);
+        $("wavelengthValue").textContent = Math.round(LIGHT_SPEED_NM / Number(freq.value));
+        $("intensityValue").textContent = sciLog(P.logI);
+        $("speedValue").textContent = Number(speed.value).toFixed(2) + "×";
+
+        $("photonsNeeded").textContent = P.n;
+        $("photonEnergy").textContent = P.hf.toFixed(2) + " → " + (P.n * P.hf).toFixed(2) + " eV";
+        $("kineticEnergy").textContent = P.KE.toFixed(2) + " eV";
+        $("yieldValue").textContent = sciLog(P.logY);
+        $("status").textContent = statusText();
+    }
+
+    // ============================================================
+    // ANIMATION STATE
+    //
+    // One "attempt" at a time. A successful attempt sends n photons
+    // quickly enough that the electron never falls back from its
+    // virtual state. A failed one sends fewer, and the electron
+    // drops back after the virtual-state lifetime.
+    // ============================================================
+
+    var att = null, wait = 0.5, T = 0, count = 0, flash = 0, restAlpha = 1;
+    var photons = [];
+
+    function rungY(i) { return YF - i * P.hf * S; }
+
+    function startAttempt() {
+        var n = P.n, success = Math.random() < P.p;
+        var k = success ? n : (n > 1 ? 1 + Math.floor(Math.random() * Math.min(n - 1, 3)) : 0);
+
+        att = {
+            n: n, success: success, k: k, sent: 0, clock: 0,
+            r: 0, vt: 0, ey: YF, state: "run",
+            fx: EX, trail: [], dec: 0, passSent: false
+        };
+    }
+
+    function spawn(kind, x, y, dir) {
+        photons.push({ kind: kind, x: x, y: y, dir: dir });
+    }
+
+    function endAttempt() {
+        att = null;
+        wait = 0.5 + Math.random() * 0.6;
+    }
+
+    function update(dtReal) {
+        var dt = dtReal * Number(speed.value);
+        T += dtReal;
+        restAlpha = Math.min(1, restAlpha + dtReal * 2);
+        flash = Math.max(0, flash - dtReal * 2.5);
+
+        // photons move in every state
+        for (var i = photons.length - 1; i >= 0; i--) {
+            var p = photons[i];
+            p.x += p.dir * PHOTON_SPEED * dt;
+
+            if (p.kind === "abs" && att && att.state === "run" && p.x >= EX - 14) {
+                photons.splice(i, 1);
+                att.r++;
+                att.vt = 0;
+                continue;
+            }
+            if (p.kind === "pass" && p.x - PLEN > EX + 160) { photons.splice(i, 1); continue; }
+            if (p.kind === "rerad" && p.x + PLEN < -20) { photons.splice(i, 1); continue; }
+        }
+
+        if (!att) {
+            wait -= dt;
+            if (wait <= 0) { startAttempt(); }
+            return;
+        }
+
+        var a = att;
+        a.clock += dt;
+
+        if (a.state === "run") {
+
+            while (a.sent < a.k && a.clock >= a.sent * GAP) {
+                spawn("abs", 0, rungY(a.sent), 1);
+                a.sent++;
+            }
+            if (a.k === 0 && !a.passSent) {
+                spawn("pass", 0, YF, 1);
+                a.passSent = true;
+            }
+            if (a.k === 0 && a.passSent && photons.length === 0) {
+                endAttempt();
+                return;
+            }
+
+            // electron climbs to the rung it has reached
+            a.ey += (rungY(a.r) - a.ey) * Math.min(1, dt * 10);
+
+            // virtual state runs out of time
+            if (a.r > 0 && a.r < a.n) {
+                a.vt += dt;
+                if (a.vt > TAU_V) {
+                    a.state = "decay";
+                    a.r = 0;
+                    a.dec = 0;
+                    spawn("rerad", EX - 30, a.ey, -1);
+                }
+            }
+
+            // all n photons absorbed: the electron escapes
+            if (a.r === a.n) {
+                a.state = "fly";
+                a.fx = EX;
+                a.trail = [];
+                restAlpha = 0;
+            }
+
+        } else if (a.state === "decay") {
+
+            a.ey += (YF - a.ey) * Math.min(1, dt * 8);
+            a.dec += dt;
+            if (a.dec > 0.7 && photons.length === 0) { endAttempt(); }
+
+        } else if (a.state === "fly") {
+
+            var v = 140 + 230 * Math.sqrt(P.KE);
+            a.fx += v * dt;
+            a.trail.push(a.fx);
+            if (a.fx >= COLL_X - 8) {
+                count++;
+                flash = 1;
+                a.state = "done";
+                a.dec = 0;
+            }
+
+        } else if (a.state === "done") {
+
+            a.dec += dt;
+            if (a.dec > 0.4) { endAttempt(); }
+        }
+    }
+
+    // ============================================================
+    // DRAWING
+    // ============================================================
+
+    var dots = [];
+    (function () {
+        var seed = 7;
+        function rnd() { seed = (seed * 16807) % 2147483647; return seed / 2147483647; }
+        for (var i = 0; i < 34; i++) {
+            dots.push({
+                x: SLAB_L + 16 + rnd() * (SLAB_R - SLAB_L - 32),
+                y: YF + 40 + rnd() * 62,
+                ph: rnd() * 6.28
+            });
+        }
+    })();
+
+    function txt(s, x, y, size, color, align, style) {
+        ctx.fillStyle = color || "rgba(255,255,255,.9)";
+        ctx.font = (style || "") + " " + (size || 13) + 'px "IBM Plex Sans", Arial, sans-serif';
+        ctx.textAlign = align || "center";
+        ctx.fillText(s, x, y);
+    }
+
+    function line(x1, y1, x2, y2) {
+        ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+    }
+
+    function arrowUp(x, yFrom, yTo, color, alpha, lw) {
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw;
+        line(x, yFrom, x, yTo + 6);
+        ctx.beginPath();
+        ctx.moveTo(x, yTo);
+        ctx.lineTo(x - 5, yTo + 9);
+        ctx.lineTo(x + 5, yTo + 9);
+        ctx.closePath(); ctx.fill();
+        ctx.restore();
+    }
+
+    function drawPacket(p) {
+        var lam = 6 + (LIGHT_SPEED_NM / P.f / 3000) * 30;
+        var tail = p.x - p.dir * PLEN, alpha = 1;
+
+        if (p.kind === "rerad") { alpha = 0.45; }
+        if (p.kind === "pass" && p.x > EX) { alpha = clamp(1 - (p.x - EX) / 160, 0.1, 1); }
+
+        ctx.save();
+        ctx.strokeStyle = rgb(lightRGB, alpha);
+        ctx.shadowColor = rgb(lightRGB, alpha);
+        ctx.shadowBlur = 10;
+        ctx.lineWidth = 2.2;
+        ctx.beginPath();
+        for (var s = 0; s <= PLEN; s += 2) {
+            var u = s / PLEN, env = Math.exp(-Math.pow((u - 0.5) / 0.22, 2));
+            var px = tail + p.dir * s;
+            var py = p.y + 9 * env * Math.sin(s / lam * 6.2832 - T * 12);
+            if (s === 0) { ctx.moveTo(px, py); } else { ctx.lineTo(px, py); }
+        }
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    function drawElectron(x, y, alpha) {
+        var r = 20 * (1 + 0.12 * Math.sin(T * 5));
+        var g = ctx.createRadialGradient(x, y, 0, x, y, r);
+        g.addColorStop(0, "rgba(110,231,255,.9)");
+        g.addColorStop(1, "rgba(110,231,255,0)");
+        ctx.save();
+        ctx.globalAlpha = alpha;
+        ctx.fillStyle = g;
+        ctx.beginPath(); ctx.arc(x, y, r, 0, 6.2832); ctx.fill();
+        ctx.fillStyle = "#eafcff";
+        ctx.beginPath(); ctx.arc(x, y, 6.5, 0, 6.2832); ctx.fill();
+        txt("e⁻", x, y - 20, 13, "#e8eef8", "center");
+        ctx.restore();
+    }
+
+    function bracket(x, y1, y2, color) {
+        ctx.save();
+        ctx.strokeStyle = color; ctx.lineWidth = 1.5;
+        line(x, y1, x, y2);
+        line(x - 5, y1, x + 5, y1);
+        line(x - 5, y2, x + 5, y2);
+        ctx.restore();
+    }
+
+    function draw() {
+        ctx.setTransform(dpr * scale, 0, 0, dpr * scale, 0, 0);
+        ctx.clearRect(0, 0, VW, VH);
+
+        var n = P.n, YV = YF - P.phi * S;
+        var a = att;
+        var lit = a ? (a.state === "run" || a.state === "decay" ? a.r : n) : 0;
+        var amber = "#ffb547", muted = "#9aa6b8";
+
+        // ---- energy axis ----
+        ctx.strokeStyle = "rgba(255,255,255,.35)"; ctx.lineWidth = 1.5;
+        line(36, 510, 36, 22);
+        ctx.fillStyle = "rgba(255,255,255,.35)";
+        ctx.beginPath(); ctx.moveTo(36, 16); ctx.lineTo(31, 26); ctx.lineTo(41, 26); ctx.closePath(); ctx.fill();
+        ctx.save(); ctx.translate(18, 270); ctx.rotate(-Math.PI / 2);
+        txt("Electron energy", 0, 0, 12, muted, "center"); ctx.restore();
+
+        // ---- metal ----
+        var g = ctx.createLinearGradient(0, YF, 0, VH);
+        g.addColorStop(0, "rgba(110,231,255,.22)");
+        g.addColorStop(1, "rgba(110,231,255,.04)");
+        ctx.fillStyle = g;
+        ctx.fillRect(SLAB_L, YF, SLAB_R - SLAB_L, VH - YF);
+        ctx.strokeStyle = "rgba(255,255,255,.8)"; ctx.lineWidth = 2;
+        line(SLAB_L, YF, SLAB_R, YF);
+        txt("Metal: electrons fill every level up to the Fermi level", SLAB_L + 12, YF + 24, 12, muted, "left");
+        txt("Fermi level", SLAB_R + 10, YF + 4, 12, "rgba(255,255,255,.8)", "left");
+
+        ctx.fillStyle = "rgba(110,231,255,.55)";
+        dots.forEach(function (d) {
+            ctx.beginPath();
+            ctx.arc(d.x + 2 * Math.sin(T * 1.3 + d.ph), d.y + 2 * Math.cos(T * 1.1 + d.ph), 3, 0, 6.2832);
+            ctx.fill();
+        });
+
+        // ---- vacuum level ----
+        ctx.save();
+        ctx.strokeStyle = "rgba(255,181,71,.75)"; ctx.lineWidth = 1.5; ctx.setLineDash([7, 6]);
+        line(SLAB_L, YV, COLL_X, YV);
+        ctx.restore();
+        txt("Vacuum level: an electron here is free", 560, YV + 17, 12, amber, "left");
+
+        // ---- φ and KE brackets ----
+        var bx = EX + 175;
+        bracket(bx, YF, YV, muted);
+        txt("φ = " + P.phi.toFixed(2) + " eV", bx + 9, (YF + YV) / 2 + 4, 12, muted, "left");
+        var topY = rungY(n);
+        if (P.KE > 0.005) {
+            bracket(bx, YV, topY, amber);
+            txt("KE max = " + P.KE.toFixed(2) + " eV", bx + 9, (YV + topY) / 2 + 4, 12, amber, "left");
+        }
+
+        // ---- energy ladder: virtual states and final state ----
+        for (var i = 1; i <= n; i++) {
+            var y = rungY(i);
+            ctx.save();
+            if (i < n) {
+                ctx.strokeStyle = rgb(lightRGB, 0.7); ctx.lineWidth = 1.5; ctx.setLineDash([5, 5]);
+            } else {
+                ctx.strokeStyle = amber; ctx.lineWidth = 2.5;
+            }
+            line(EX - 62, y, EX + 62, y);
+            ctx.restore();
+
+            if (i < n && (n <= 4 || i === 1)) {
+                txt(n <= 4 ? "virtual state" : "virtual states", EX + 70, y + 4, 12, muted, "left", "italic");
+            }
+        }
+        txt("n · hf = " + (n * P.hf).toFixed(2) + " eV above E_F", EX - 62, topY - 9, 12, amber, "left");
+
+        // photon arrows between rungs
+        for (var j = 0; j < n; j++) {
+            arrowUp(EX + 30, rungY(j), rungY(j + 1), rgb(lightRGB), j < lit ? 0.95 : 0.2, 2.5);
+        }
+        txt("hf", EX + 38, (rungY(0) + rungY(1)) / 2 + 4, 12, muted, "left");
+
+        // ---- photons ----
+        photons.forEach(drawPacket);
+
+        // ---- electron ----
+        if (a && a.state === "fly") {
+            var fy = rungY(n);
+            ctx.save();
+            ctx.strokeStyle = "rgba(110,231,255,.35)"; ctx.lineWidth = 2; ctx.setLineDash([3, 5]);
+            line(EX, fy, a.fx, fy);
+            ctx.restore();
+            drawElectron(a.fx, fy, 1);
+        } else if (a && a.state === "done") {
+            // electron has reached the collector
+        } else {
+            var ey = a ? a.ey : YF;
+            drawElectron(EX, ey, a ? 1 : restAlpha);
+
+            if (a && a.state === "run" && a.r > 0 && a.r < n) {
+                ctx.save();
+                ctx.strokeStyle = amber; ctx.lineWidth = 2.5;
+                ctx.beginPath();
+                ctx.arc(EX, ey, 17, -Math.PI / 2, -Math.PI / 2 + 6.2832 * (1 - a.vt / TAU_V));
+                ctx.stroke();
+                ctx.restore();
+                txt("virtual state is running out of time", EX - 62, ey + 28, 12, amber, "left", "italic");
+            }
+        }
+
+        // ---- collector ----
+        if (flash > 0) {
+            var cg = ctx.createLinearGradient(COLL_X - 90, 0, COLL_X, 0);
+            cg.addColorStop(0, "rgba(110,231,255,0)");
+            cg.addColorStop(1, "rgba(110,231,255," + (0.5 * flash) + ")");
+            ctx.fillStyle = cg;
+            ctx.fillRect(COLL_X - 90, 44, 90, 430);
+        }
+        ctx.fillStyle = "rgba(255,255,255,.35)";
+        ctx.fillRect(COLL_X, 44, 12, 430);
+        txt("Collector", COLL_X + 6, 36, 12, muted, "center");
+        txt(count + " collected", COLL_X + 6, 496, 12, "#e8eef8", "center");
+
+        // ---- heading ----
+        var head = n + (n === 1 ? " photon" : " photons") + " × " + P.hf.toFixed(2) + " eV = " +
+                   (n * P.hf).toFixed(2) + " eV  ≥  φ = " + P.phi.toFixed(2) + " eV";
+        txt(head, 640, 24, 16, "#f4f7fb", "center", "500");
+        txt(n === 1 ? "Rate ∝ I   (one-photon, ordinary photoelectric effect)"
+                    : "Rate ∝ I" + sup(n) + "   (photons must arrive together)",
+            640, 44, 13, muted, "center");
+    }
+
+    // ============================================================
+    // GRAPHS
+    // ============================================================
+
+    var PAL = ["#6ee7ff", "#ffb547", "#ff7ab8", "#a78bfa"];
+    function colN(n) { return PAL[n - 1] || "#7cffb2"; }
+
+    var GL = 50, GR = 14, GT = 26, GB = 54, FG = "#e8eef8", MU = "#9aa6b8";
+    var cvK = $("graphK"), cvI = $("graphI");
+
+    function plot(cv, o) {
+        var d = window.devicePixelRatio || 1, w = cv.clientWidth, h = cv.clientHeight;
+        cv.width = w * d; cv.height = h * d;
+        var c = cv.getContext("2d");
+        c.setTransform(d, 0, 0, d, 0, 0);
+        var X = function (v) { return GL + (v - o.x0) / (o.x1 - o.x0) * (w - GL - GR); };
+        var Y = function (v) { return h - GB - (v - o.y0) / (o.y1 - o.y0) * (h - GT - GB); };
+        var minus = function (v) { return String(v).replace("-", "−"); };
+
+        c.font = '12px "IBM Plex Mono", monospace';
+        c.lineWidth = 1;
+        c.strokeStyle = "rgba(255,255,255,.08)";
+        c.fillStyle = MU;
+        o.yt.forEach(function (v) {
+            c.beginPath(); c.moveTo(GL, Y(v)); c.lineTo(w - GR, Y(v)); c.stroke();
+            c.textAlign = "right"; c.textBaseline = "middle"; c.fillText(minus(v), GL - 8, Y(v));
+        });
+        o.xt.forEach(function (v) {
+            c.beginPath(); c.moveTo(X(v), GT); c.lineTo(X(v), h - GB); c.stroke();
+            c.textAlign = "center"; c.textBaseline = "top"; c.fillText(v, X(v), h - GB + 8);
+        });
+        c.strokeStyle = "rgba(255,255,255,.35)";
+        c.beginPath(); c.moveTo(GL, GT); c.lineTo(GL, h - GB); c.lineTo(w - GR, h - GB); c.stroke();
+
+        c.textAlign = "left"; c.textBaseline = "top"; c.fillStyle = FG;
+        c.fillText(o.yl, GL, 2);
+        c.textAlign = "center"; c.fillStyle = MU;
+        c.fillText(o.xl, (GL + w - GR) / 2, h - GB + 28);
+
+        (o.vl || []).forEach(function (m) {
+            c.save(); c.setLineDash([4, 4]); c.strokeStyle = m.c;
+            c.beginPath(); c.moveTo(X(m.x), GT); c.lineTo(X(m.x), h - GB); c.stroke();
+            c.restore();
+            c.fillStyle = m.c; c.textAlign = "center"; c.textBaseline = "bottom";
+            c.fillText(m.t, X(m.x), GT - 4);
+        });
+
+        (o.hl || []).forEach(function (m) {
+            c.save(); c.setLineDash([4, 4]); c.strokeStyle = m.c;
+            c.beginPath(); c.moveTo(GL, Y(m.y)); c.lineTo(w - GR, Y(m.y)); c.stroke();
+            c.restore();
+            c.fillStyle = m.c; c.textAlign = "right"; c.textBaseline = "bottom";
+            c.fillText(m.t, w - GR - 4, Y(m.y) - 3);
+        });
+
+        c.save();
+        c.beginPath(); c.rect(GL, GT, w - GL - GR, h - GT - GB); c.clip();
+        o.series.forEach(function (s) {
+            if (!s.pts.length) { return; }
+            c.save();
+            c.globalAlpha = s.a === undefined ? 1 : s.a;
+            c.strokeStyle = s.c; c.lineWidth = s.w || 2.5;
+            if (s.glow) { c.shadowColor = s.c; c.shadowBlur = 12; }
+            c.beginPath();
+            s.pts.forEach(function (p, i) { i ? c.lineTo(X(p[0]), Y(p[1])) : c.moveTo(X(p[0]), Y(p[1])); });
+            c.stroke(); c.restore();
+        });
+        c.restore();
+
+        (o.tx || []).forEach(function (t) {
+            c.fillStyle = t.c; c.textAlign = "left"; c.textBaseline = "bottom";
+            c.globalAlpha = t.a === undefined ? 1 : t.a;
+            c.fillText(t.t, X(t.x) + 5, Y(t.y) - 4);
+            c.globalAlpha = 1;
+        });
+
+        if (o.dot) {
+            c.fillStyle = "#ffffff";
+            c.beginPath(); c.arc(X(o.dot[0]), Y(o.dot[1]), 5, 0, Math.PI * 2); c.fill();
+        }
+    }
+
+    function drawK() {
+        var hh = PLANCK * 1e14, segs = [], cur = null, prev = 0, yMax = 0;
+
+        for (var f = 1; f <= 12.0001; f += 0.02) {
+            var n = nFor(P.phi, f), ke = Math.max(0, n * hh * f - P.phi);
+            if (n !== prev) { cur = { n: n, pts: [] }; segs.push(cur); prev = n; }
+            cur.pts.push([f, ke]);
+            yMax = Math.max(yMax, ke);
+        }
+
+        var top = Math.max(1, Math.ceil(yMax)), yt = [];
+        for (var i = 0; i <= top; i++) { yt.push(i); }
+
+        var vl = [];
+        for (var m = 1; m <= 3; m++) {
+            var fx = P.f0 / m;
+            if (fx >= 1 && fx <= 12) { vl.push({ x: fx, c: "#ffb547", t: m === 1 ? "f₀" : "f₀/" + m }); }
+        }
+
+        plot(cvK, {
+            x0: 1, x1: 12, y0: 0, y1: top, xt: [2, 4, 6, 8, 10, 12], yt: yt,
+            xl: "Photon frequency (×10¹⁴ Hz)", yl: "Max KE (eV)",
+            series: segs.map(function (s) { return { pts: s.pts, c: colN(s.n), glow: true }; }),
+            vl: vl,
+            dot: [P.f, P.KE]
+        });
+    }
+
+    function drawI() {
+        var n = P.n, step = n > 6 ? 12 : 6;
+        var y0 = -step * Math.ceil(6 * Math.max(4, n) / step), yt = [];
+        for (var v = 0; v >= y0; v -= step) { yt.push(v); }
+
+        var series = [], tx = [], orders = [1, 2, 3, 4];
+        if (orders.indexOf(n) < 0) { orders.push(n); }
+
+        orders.forEach(function (m) {
+            var on = m === n;
+            series.push({
+                pts: [[6, -6 * m], [12, 0]], c: colN(m),
+                w: on ? 3 : 1.5, a: on ? 1 : 0.4, glow: on
+            });
+            tx.push({ x: 6, y: -6 * m, t: "n = " + m, c: colN(m), a: on ? 1 : 0.6 });
+        });
+
+        plot(cvI, {
+            x0: 6, x1: 12, y0: y0, y1: 0, xt: [6, 7, 8, 9, 10, 11, 12], yt: yt,
+            xl: "Peak intensity (log₁₀ of W/cm²)", yl: "Relative yield (log₁₀)",
+            series: series, tx: tx,
+            hl: [{ y: FLOOR, c: "#ffb547", t: "barely detectable" }],
+            dot: [P.logI, Math.max(y0, P.logY)]
+        });
+    }
+
+    function drawGraphs() { drawK(); drawI(); }
+
+    // ============================================================
+    // CONTROLS
+    // ============================================================
+
+    function refresh() {
+        P = getPhysics();
+        lightRGB = getLightColor(P.f);
+        photons = [];
+        att = null;
+        wait = 0.3;
+        updateReadouts();
+        drawGraphs();
+        markPresets();
+    }
+
+    function markPresets() {
+        document.querySelectorAll(".toolbar [data-f]").forEach(function (b) {
+            var on = b.getAttribute("data-metal") === metal.value &&
+                     Number(b.getAttribute("data-f")) === Number(freq.value) &&
+                     Number(b.getAttribute("data-i")) === Number(inten.value);
+            b.classList.toggle("on", on);
+        });
+    }
+
+    metal.addEventListener("change", refresh);
+    freq.addEventListener("input", refresh);
+    inten.addEventListener("input", refresh);
+    speed.addEventListener("input", function () {
+        $("speedValue").textContent = Number(speed.value).toFixed(2) + "×";
+    });
+
+    document.querySelectorAll(".toolbar [data-f]").forEach(function (b) {
+        b.addEventListener("click", function () {
+            metal.value = b.getAttribute("data-metal");
+            freq.value = b.getAttribute("data-f");
+            inten.value = b.getAttribute("data-i");
+            refresh();
+        });
+    });
+
+    window.addEventListener("resize", function () { resizeCanvas(); drawGraphs(); });
+
+    // ============================================================
+    // MAIN LOOP
+    // ============================================================
+
+    var lastTime = performance.now();
+
+    function frame(now) {
+        var dt = Math.min((now - lastTime) / 1000, 0.05);
+        lastTime = now;
+        update(dt);
+        draw();
+        requestAnimationFrame(frame);
+    }
+
+    resizeCanvas();
+    refresh();
+    requestAnimationFrame(frame);
+})();
+</script>
+
+<script>
+document.getElementById("paths").innerHTML = Array.from({ length: 22 }, function (_, i) {
+    var r = function () { return Math.round(Math.random() * 1000); };
+    return '<path pathLength="1" style="animation-delay:' + (-i * 0.9) + 's" d="M-50 ' + r() + 'C' + r() + ' ' + r() + ' ' + r() + ' ' + r() + ' 1050 ' + r() + '"/>';
+}).join("");
+</script>
+</body>
+</html>
